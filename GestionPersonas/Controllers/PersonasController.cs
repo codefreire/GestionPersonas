@@ -6,41 +6,33 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GestionPersonas.Models;
+using GestionPersonas.Services;
 
 namespace GestionPersonas.Controllers
 {
     public class PersonasController : Controller
     {
-        private readonly PersonasDBContext _context;
-
-        public PersonasController(PersonasDBContext context)
+        private readonly IPersonaService _personaService;
+        public PersonasController(IPersonaService personaService)
         {
-            _context = context;
+            _personaService = personaService;
         }
 
         // GET: Personas
         public async Task<IActionResult> Index()
         {
-              return _context.Personas != null ? 
-                          View(await _context.Personas.ToListAsync()) :
-                          Problem("Entity set 'PersonasDBContext.Personas'  is null.");
+            var personas = await _personaService.GetAllAsync();
+            return View(personas);
         }
 
         // GET: Personas/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null || _context.Personas == null)
-            {
-                return NotFound();
-            }
-
-            var persona = await _context.Personas
-                .FirstOrDefaultAsync(m => m.Cedula == id);
+            var persona = await _personaService.GetByIdAsync(id);
             if (persona == null)
             {
                 return NotFound();
             }
-
             return View(persona);
         }
 
@@ -59,8 +51,7 @@ namespace GestionPersonas.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(persona);
-                await _context.SaveChangesAsync();
+                await _personaService.AddAsync(persona);
                 return RedirectToAction(nameof(Index));
             }
             return View(persona);
@@ -69,12 +60,7 @@ namespace GestionPersonas.Controllers
         // GET: Personas/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.Personas == null)
-            {
-                return NotFound();
-            }
-
-            var persona = await _context.Personas.FindAsync(id);
+            var persona = await _personaService.GetByIdAsync(id);
             if (persona == null)
             {
                 return NotFound();
@@ -96,22 +82,7 @@ namespace GestionPersonas.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(persona);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PersonaExists(persona.Cedula))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _personaService.UpdateAsync(persona);
                 return RedirectToAction(nameof(Index));
             }
             return View(persona);
@@ -120,13 +91,7 @@ namespace GestionPersonas.Controllers
         // GET: Personas/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null || _context.Personas == null)
-            {
-                return NotFound();
-            }
-
-            var persona = await _context.Personas
-                .FirstOrDefaultAsync(m => m.Cedula == id);
+            var persona = await _personaService.GetByIdAsync(id);
             if (persona == null)
             {
                 return NotFound();
@@ -140,23 +105,13 @@ namespace GestionPersonas.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.Personas == null)
-            {
-                return Problem("Entity set 'PersonasDBContext.Personas'  is null.");
-            }
-            var persona = await _context.Personas.FindAsync(id);
-            if (persona != null)
-            {
-                _context.Personas.Remove(persona);
-            }
-            
-            await _context.SaveChangesAsync();
+            await _personaService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool PersonaExists(string id)
         {
-          return (_context.Personas?.Any(e => e.Cedula == id)).GetValueOrDefault();
+            return _personaService.PersonaExists(id);
         }
     }
 }
