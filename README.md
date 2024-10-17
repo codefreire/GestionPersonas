@@ -9,7 +9,7 @@ ___
   - Repositories => Responsable del acceso e interacción con los datos de la base de datos.
 ___
 ## • Creación base de datos
-  1. Descargarse el archivo **'database-personas.sql'** ubicado en la raíz de este proyecto
+  1. Descargarse el archivo **'database-personas.sql'** ubicado en la raíz de este repositorio.
   2. Abrir el archivo en SSMS (entorno gráfico para administrar bases de datos MS SQL Server)
   3. Clic en ejecutar o F5. Creará la base de datos con la tabla Personas.
 ___
