@@ -1,52 +1,46 @@
 ﻿using GestionPersonas.Models;
+using GestionPersonas.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionPersonas.Services
 {
     public class PersonaService : IPersonaService
     {
-        private readonly PersonasDBContext _context;
+        private readonly IPersonaRepository _personaRepository;
 
-        public PersonaService(PersonasDBContext context)
+        public PersonaService(IPersonaRepository personaRepository)
         {
-            _context = context;
+            _personaRepository = personaRepository;
         }
 
         public async Task<List<Persona>> GetAllAsync()
         {
-            return await _context.Personas.ToListAsync();
+            return await _personaRepository.GetAllAsync();
         }
 
         public async Task<Persona?> GetByIdAsync(string id)
         {
-            return await _context.Personas.FirstOrDefaultAsync(p => p.Cedula == id);
+            return await _personaRepository.GetByIdAsync(id);
         }
 
         public async Task AddAsync(Persona persona)
         {
-            _context.Add(persona);
-            await _context.SaveChangesAsync();
+            await _personaRepository.AddAsync(persona);
         }
 
         public async Task UpdateAsync(Persona persona)
         {
-            _context.Update(persona);
-            await _context.SaveChangesAsync();
+            await _personaRepository.UpdateAsync(persona);
         }
 
         public async Task DeleteAsync(string id)
         {
-            var persona = await _context.Personas.FindAsync(id);
-            if (persona != null)
-            {
-                _context.Personas.Remove(persona);
-                await _context.SaveChangesAsync();
-            }
+            await _personaRepository.DeleteAsync(id);
         }
 
         public bool PersonaExists(string id)
         {
-            return _context.Personas.Any(e => e.Cedula == id);
+            return _personaRepository.PersonaExists(id);
         }
     }
 }

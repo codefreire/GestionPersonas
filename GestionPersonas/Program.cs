@@ -1,4 +1,5 @@
 using GestionPersonas.Models;
+using GestionPersonas.Repositories;
 using GestionPersonas.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<PersonasDBContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("cnPersonasDB")));
 
 builder.Services.AddScoped<IPersonaService, PersonaService>();
+builder.Services.AddScoped<IPersonaRepository, PersonaRepository>();
 
 var app = builder.Build();
 
