@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace GestionPersonas.Models
+﻿namespace GestionPersonas.Models
 {
     public partial class Persona
     {

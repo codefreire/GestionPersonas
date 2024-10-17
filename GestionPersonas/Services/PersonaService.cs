@@ -1,6 +1,5 @@
 ﻿using GestionPersonas.Models;
 using GestionPersonas.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace GestionPersonas.Services
 {
